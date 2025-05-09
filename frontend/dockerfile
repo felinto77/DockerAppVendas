@@ -1,0 +1,19 @@
+FROM node:20-alpine
+
+# Definindo o diretório de trabalho dentro do container
+WORKDIR /app
+
+# Copiando os arquivos package.json e package-lock.json (ou yarn.lock)
+COPY package*.json ./
+
+# Instalando as dependências do projeto
+RUN npm install
+
+# Copiando o restante dos arquivos do projeto
+COPY . .
+
+# Expondo a porta padrão do Expo (19000) e a porta do Live Reload (19001)
+EXPOSE 19000 19001
+
+# Comando para iniciar o servidor de desenvolvimento do Expo
+CMD ["npm", "start"]

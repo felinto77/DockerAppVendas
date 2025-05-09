@@ -1,0 +1,31 @@
+FROM php:8.2-fpm-alpine
+
+# Instalando as extensões PHP necessárias
+RUN apk add --no-cache --update $PHPIZE_DEPS linux-headers postgresql-dev zlib-dev libpng-dev pkgconf libzip-dev \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && docker-php-ext-install pdo pdo_pgsql bcmath gd zip exif pcntl
+
+# Instalando o Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Definindo o diretório de trabalho dentro do container
+WORKDIR /var/www
+
+# Copiando os arquivos da sua aplicação para o container
+COPY . /var/www
+
+# Instalando as dependências do Laravel
+RUN composer install --no-dev --optimize-autoloader
+
+# Gerando a chave da aplicação Laravel
+RUN php artisan key:generate
+
+# Otimizando o Laravel
+RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
+
+# Expondo a porta que o servidor web (no caso, o PHP-FPM) vai usar
+EXPOSE 9000
+
+# Comando para iniciar o servidor PHP-FPM
+CMD ["php-fpm"]

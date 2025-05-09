@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: db_postgres
+    environment:
+      POSTGRES_USER: thiagocardoso
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: app_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/var/www
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: postgres
+      DB_USERNAME: thiagocardoso
+      DB_PASSWORD: 12345
+      APP_KEY: sua_chave_laravel 
+      APP_DEBUG: "true"
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: app_frontend
+    ports:
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002" # Porta para o Metro Bundler
+      - "8081:8081"
+    volumes:
+      - ./frontend:/app
+      - node_modules_frontend:/app/node_modules
+    environment:
+      NODE_ENV: development
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  node_modules_frontend:
