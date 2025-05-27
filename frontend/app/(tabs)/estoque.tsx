@@ -22,7 +22,7 @@ const EstoqueScreen = () => {
   async function listarProdutos() {
     try {
       const response = await fetch(
-        'http://backend:8000/api/products'
+        'http://localhost:8000/api/products'
       );
       
       if (!response.ok) {

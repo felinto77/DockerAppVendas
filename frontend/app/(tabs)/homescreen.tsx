@@ -37,8 +37,8 @@ const HomeScreen = () => {
       try {
         setIsLoading(true);
         const response = await fetch(
-          `http://backend:8000/api/products` 
-        )
+          `${process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000'}/api/products`
+        );
         
         const data = await response.json();
         setProducts(data);

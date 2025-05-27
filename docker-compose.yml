@@ -5,11 +5,11 @@ services:
     image: postgres:13
     container_name: db_postgres
     environment:
-      POSTGRES_USER: thiagocardoso
-      POSTGRES_PASSWORD: 12345
-      POSTGRES_DB: postgres
+      POSTGRES_USER: thigga
+      POSTGRES_PASSWORD: thigga
+      POSTGRES_DB: thigga
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -18,21 +18,34 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: app_backend
-    ports:
-      - "8000:8000"
+    
     volumes:
       - ./backend:/var/www
     environment:
       DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_DATABASE: postgres
-      DB_USERNAME: thiagocardoso
-      DB_PASSWORD: 12345
+      DB_DATABASE: thigga
+      DB_USERNAME: thigga
+      DB_PASSWORD: thigga
       APP_KEY: sua_chave_laravel 
       APP_DEBUG: "true"
     depends_on:
       - postgres
+
+
+  nginx: 
+    image: nginx:stable-alpine
+    container_name: laravel_nginx_webserver
+    restart: unless-stopped 
+    ports: 
+      - "8000:80"
+    volumes:
+      - ./backend:/var/www/html
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+
 
   frontend:
     build:
